@@ -23,7 +23,7 @@ Currently, SXMO uses dwm as a tiling window manager with multiple desktops. The 
 Other opensource phone Uis are Phosh which is GNOME’s attempt and Plasma which is KDE’s offering. Then of course there are Apple and Google’s official UI’s that we have been forced to use for the past decade.
 
 ## Three-week plan to get to a runnable pre-alpha version AKA Roadmap
-1. Get a handle on the ncurses API, and allow for user to input text and display the user's text on screen DONE
+1. DONE Get a handle on the ncurses API, and allow for user to input text and display the user's text on screen
 2. build a scrollable list in the UI and populate it with open child processes and programs launchable from $PATH. 
 3. Add a launch button to launch the selected program/process from the list. 
 4. Add an advanced view button to also see background processes and add the ability to kill any selected process as well as refocus/launch
