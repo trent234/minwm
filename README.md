@@ -22,10 +22,17 @@ Currently, SXMO uses dwm as a tiling window manager with multiple desktops. The 
 
 Other opensource phone Uis are Phosh which is GNOME’s attempt and Plasma which is KDE’s offering. Then of course there are Apple and Google’s official UI’s that we have been forced to use for the past decade.
 
-## Three-week plan to get to a runnable pre-alpha version 
-Get a handle on the ncurses API, build a scrollable list in the UI and populate it with open child processes and programs launchable from $PATH. Add a launch button to launch the selected program/process from the list. If there is more time, add an advanced view to also see background processes and the ability to kill. 
+## Three-week plan to get to a runnable pre-alpha version AKA Roadmap
+1. Get a handle on the ncurses API, and allow for user to input text and display the user's text on screen DONE
+2. build a scrollable list in the UI and populate it with open child processes and programs launchable from $PATH. 
+3. Add a launch button to launch the selected program/process from the list. 
+4. Add an advanced view button to also see background processes and add the ability to kill any selected process as well as refocus/launch
 
-To get to alpha: start interfacing with x11 and figure out how to map and unmap programs from the screen.
+I think that's all doable by the three week mark. Then...
+
+5. Start interfacing with x11 and figure out how to map and unmap programs from the screen.
+6. Once the fundamental app switching works, install lisgd library and test so we have a method of returning to minwm from a focused app
+7. Start filling in the expected "Extended Window Manager Hints" requirements e.g. set "window" of unfocused or "minimized" app propert _NET_WM_STATE_HIDDEN set to true
 
 ncurses resource:
 http://tldp.org/HOWTO/NCURSES-Programming-HOWTO/printw.html
