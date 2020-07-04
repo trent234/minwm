@@ -17,15 +17,15 @@ LINK = -lncurses -lX11
 # which were uncommented by me and added to OBJ below 
 # OBJ = TargaImage.o
 
-minwm: # $(OBJ)
+minwm: minwm.c # $(OBJ)
 #	g++ -ggdb -Wall -o Project1 Main.cpp $(OBJ) $(INCLUDE) $(LIB) $(LINK) 
 	gcc -ggdb -Wall -o minwm minwm.c  $(LINK) 
 
 # TargaImage.o: TargaImage.cpp TargaImage.h
 #	g++ -ggdb -Wall -c -o TargaImage.o TargaImage.cpp $(INCLUDE)
 
-# clean:
+ clean:
 #	@for obj in $(OBJ); do\
 #		if test -f $$obj; then rm $$obj; fi; done
-#	@if (test -f Project1); then rm Project1; fi;
+	@if (test -f minwm); then rm minwm; fi;
 
