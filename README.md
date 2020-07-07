@@ -1,7 +1,11 @@
 # minwm
 An ncurses based app switcher / launcher / window manager developed with the PinePhone in mind.
 
-The name inspiration comes from the fact that the switching mechanism will revolve around the desktop analogy that when an app is selected, the minwm will be “minimized” and the app will display on the same “desktop”. Switching back to minwm from the app requires the current app to be “minimized” as well. Also, I’m following the inspiration behind SXMO and the “suckless” programs that tend to be minimalistic and do one job and do it well, so “min” is a play on that.
+License is MIT. See the file LICENSE for more details.
+
+The name inspiration comes from the fact that the switching mechanism will revolve around the desktop analogy that when an app is selected, the minwm will be “minimized” and the app will display on the same “desktop”. Switching back to minwm from the app requires the current app to be “minimized” as well. 
+Also, I’m following the inspiration behind SXMO and the “suckless” programs that tend to be minimalistic and do one job and do it well, so “min” is a play on that.
+Or perhaps, a backronym is Made In Ncurses Window Manager.
 
 ## All Team Member names 
 Trent Wilson
