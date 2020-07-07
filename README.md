@@ -30,9 +30,10 @@ Other opensource phone Uis are Phosh which is GNOME’s attempt and Plasma which
 
 I think that's all doable by the three week mark. Then...
 
-5. Start interfacing with x11 and figure out how to map and unmap programs from the screen.
-6. Once the fundamental app switching works, install lisgd library and test so we have a method of returning to minwm from a focused app
-7. Start filling in the expected "Extended Window Manager Hints" requirements e.g. set "window" of unfocused or "minimized" app propert _NET_WM_STATE_HIDDEN set to true
+5. There will need to be some basic tiling component required. At a minimum I need to create a way for svkbd to tell minwm it has launched and minwm needs to give the bottom portion of the screen for the keyboard. And adjust back when the keyboard exits. And also decide how to deal with dialogue boxes.
+6. Start interfacing with x11 and figure out how to map and unmap programs from the screen.
+7. Once the fundamental app switching works, install lisgd library and test so we have a method of returning to minwm from a focused app
+8. Start filling in the expected "Extended Window Manager Hints" requirements e.g. set "window" of unfocused or "minimized" app propert _NET_WM_STATE_HIDDEN set to true
 
 ncurses resource:
 http://tldp.org/HOWTO/NCURSES-Programming-HOWTO/printw.html
