@@ -112,7 +112,7 @@ int get_prog_list(str_list** in_list, char* substr){
     //clever strcspn use from:
     //https://stackoverflow.com/questions/2693776/
     buf[strcspn(buf, "\n")] = 0;
-    list->p[list->len] = (char*) malloc(sizeof(char) * strlen(buf));
+    list->p[list->len] = (char*) malloc(sizeof(char) * strlen(buf) + 1);
     strncpy(list->p[list->len++], buf, strlen(buf)); 
   }
   ret_code = pclose(stream);
