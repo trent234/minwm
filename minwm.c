@@ -29,6 +29,7 @@ int get_input(char* user_string, int max_element, int cur_y, int cur_x);
 int run();
 
 //frees all str_lists that may be connected as well as their str contents
+//in must be either allocated or NULL. same goes for its next ptr
 int free_str_list(str_list* in){
   str_list* temp;
   //while there are lists and we haven't filled available y axis space already
@@ -113,7 +114,7 @@ int get_prog_list(str_list** in_list, char* substr){
     //https://stackoverflow.com/questions/2693776/
     buf[strcspn(buf, "\n")] = 0;
     list->p[list->len] = (char*) malloc(sizeof(char) * strlen(buf) + 1);
-    strncpy(list->p[list->len++], buf, strlen(buf)); 
+    strncpy(list->p[list->len++], buf, strlen(buf) + 1); 
   }
   ret_code = pclose(stream);
   if(ret_code == -1)
@@ -134,7 +135,7 @@ int get_input(char* user_string, int max_element, int cur_y, int cur_x){
   if(next_position > max_element)
     return -1;
   if(user_key == KEY_BACKSPACE || user_key == KEY_DC){
-    user_string[next_position - 1] = '\0'; 
+    user_string[next_position - 1] = 0; 
     return 0;
   }
   if(user_key >= 32 || user_key <= 126){
