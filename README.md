@@ -28,17 +28,18 @@ Other open source phone Uis are Phosh which is GNOME’s attempt and Plasma whic
 
 ## Three-week plan to get to a runnable pre-alpha version AKA Roadmap
 1. ***DONE (pre alpha version)*** Get a handle on the ncurses API, and allow for user to input text and display the user's text on screen
-2. build a scrollable list in the UI and populate it with open child processes and programs launchable from $PATH. ***this is the WIP. currently have program list output but no scrolling. also needs some bug squashing, refactoring, etc. also, no proc list handling until spawn functionality exists. ***
-3. Add a launch button to launch the selected program/process from the list. 
-4. Start interfacing with X11 and figure out how to map and unmap programs from the screen. clicking some button from minwm will be launch. interfacing with lisgd will be method of refocusing minwm. will need to start testing in QEMU at this point.
+2. build a scrollable list in the UI and populate it with open child processes and programs launchable from $PATH. ***this is the WIP. currently have program list output but no scrolling.Also, no proc list handling until spawn functionality exists.***
+3. Add ncurses "windows" one for text input, one for list with border and sized dynamically dependent on screen size (max_x and max_y)
+4. Add a launch button to launch the selected program/process from the list. 
 
 I think that's all doable by the three week mark. Then...
 
-5. There will need to be some basic tiling component required. At a minimum I need to create a way for svkbd to tell minwm it has launched and minwm needs to give the bottom portion of the screen for the keyboard. And adjust back when the keyboard exits. And also decide how to deal with dialogue boxes.
-6. Add an advanced view button to also see background processes and add the ability to kill any selected process as well as refocus/launch. maybe this should be a tree like structure to account for parent/child stuff. or just auto take orphans in order to remove this behavior.
-7. Once the fundamental app switching works, install lisgd library and test so we have a method of returning to minwm from a focused app
-8. Figure out how we "capture" child processes of managed process. what do we do with it? switch to it directly? how to specify in app switcher whats a parent process so user knows killing parent may have unintended side effects. perhaps set up minwm as orphanage?
-8. Start filling in the expected "Extended Window Manager Hints" requirements e.g. set "window" of unfocused or "minimized" app propert _NET_WM_STATE_HIDDEN set to true
+5. Start interfacing with X11 and figure out how to map and unmap programs from the screen. clicking some button from minwm will be launch. interfacing with lisgd will be method of refocusing minwm. will need to start testing in QEMU at this point.
+6. There will need to be some basic tiling component required. At a minimum I need to create a way for svkbd to tell minwm it has launched and minwm needs to give the bottom portion of the screen for the keyboard. And adjust back when the keyboard exits. And also decide how to deal with dialogue boxes.
+7. Add an advanced view button to also see background processes and add the ability to kill any selected process as well as refocus/launch. maybe this should be a tree like structure to account for parent/child stuff. or just auto take orphans in order to remove this behavior.
+8. Once the fundamental app switching works, install lisgd library and test so we have a method of returning to minwm from a focused app
+9. Figure out how we "capture" child processes of managed process. what do we do with it? switch to it directly? how to specify in app switcher whats a parent process so user knows killing parent may have unintended side effects. perhaps set up minwm as orphanage?
+10. Start filling in the expected "Extended Window Manager Hints" requirements e.g. set "window" of unfocused or "minimized" app propert _NET_WM_STATE_HIDDEN set to true
 
 
 ncurses resource:
