@@ -9,6 +9,7 @@ Or perhaps, a backronym is Made In Ncurses Window Manager.
 
 ## All Team Member names 
 Trent Wilson
+Michael Jenkins
 
 ## Project Overview: what will your project do? What function will it serve?
 minwm takes inspiration from SXMO UI. minwm will be an ncurses based app that lists the currently open gui apps. Selecting one will “switch to the app”. At first my idea was to interface with a window manager in order to implement the “switching” but after a lot of research and many different ideas I think it is feasible to manage child processes myself, and code directly with the xorg api to map and unmap programs as needed.
