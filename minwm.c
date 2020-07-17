@@ -6,7 +6,11 @@
 #include <string.h>
 #include <ncurses.h>
 
-//got some fundamentals on how a window manager works from evilwm
+#define BAR_WIN 0
+#define INPUT_WIN 1
+#define LIST_WIN 2
+
+//some fundamentals on how a window manager works from evilwm
 //basically the spawn idea (not implemented yet)
 //https://github.com/kek/evilwm/blob/master/misc.c
 
@@ -24,11 +28,12 @@ typedef struct str_list {
 } str_list;
 
 int free_list(str_list* in);
-int print_list(str_list* in, int match_len, int cur_y, int max_y, int cur_x);
+int print_list(WINDOW* win, str_list* in, int match_len);
 int widen_list(str_list* in_list, char* in);
 int narrow_list(str_list* in_list, char* in);
 int get_prog_list(str_list** in_list);
-int get_input(char* user_string, int max_element, int cur_y, int cur_x);
+int process_input(WINDOW* win, char* user_string);
+WINDOW** create_windows();
 int run();
 
 //frees all str_lists that may be connected as well as their str contents
@@ -45,20 +50,33 @@ int free_list(str_list* in){
   return 0;
 }
 
-//in = str_list to print off. cur_y / max_y to constrain list len
-//x dimension should be input constrained elsewhere (not implemented yet)
-int print_list(str_list* in, int match_len, int cur_y, int max_y, int cur_x){
-  //while there are lists and we haven't filled available y axis space already
+//in = str_list to print off. should be alloc'd or NULL, not dangling 
+int print_list(WINDOW* win, str_list* in, int match_len){
+  //spacing = 1 for border 1 for space (1 side) when need both sides: 2*spacing
+  int max_x, max_y, i = 0, spacing_y = 1, spacing_x = 2;
+
+  getmaxyx(win, max_y, max_x);
+  //while there are lists 
   while(in){
-    for(int i = 0; i < in->len && cur_y < max_y; i++){
-      if(in->match_len[i] == match_len){
-        wmove(stdscr, cur_y++, 1);
-        clrtoeol();
-        printw("%s", in->p[i]); 
+    //while there are still unvisited rows in our list window
+    for(int cur_y = spacing_y; cur_y < max_y - spacing_y; cur_y++){
+      //set the cursor on working row and clear any old junk from this row 
+      wmove(win, cur_y, spacing_x);
+      wclrtoeol(win);
+      //find next prog in list that matches the user string
+      while(i < in->len && in->match_len[i] != match_len)
+        i++;
+      //if we haven't run out of matches in the prog list
+      if(i < in->len){
+	//print each char taking care to not go past max_x width for this win
+	for(int j = 0; j < strlen(in->p[i]) && j < max_x - (2 * spacing_x); j++)
+          mvwaddch(win, cur_y, j + spacing_x, in->p[i][j]);
+	i++;
       }
     }
     in = in->next;
   }
+  wrefresh(win);
   return 0;
 }
 
@@ -75,6 +93,7 @@ int widen_list(str_list* in_list, char* in){
   }
   return 0;
 }
+
 //used after user adds a char thus narrowing the pool
 //in = user input 
 int narrow_list(str_list* in_list, char* in){
@@ -146,62 +165,102 @@ int get_prog_list(str_list** in_list){
 //perhaps the future will be more dynamic and nice
 //return codes 0 = success; -1 = no more room; -2 = unrecognized input 
 // 1 = it was a delete. **this is used to manage str_len.match_len
-int get_input(char* user_string, int max_element, int cur_y, int cur_x){
-  int next_position = strnlen(user_string, max_element + 1);
-  int user_key = mvwgetch(stdscr, cur_y, cur_x);
+//refactor: ESC, middle mouse, and probs others still result in bad behavior
+int process_input(WINDOW* win, char* user_string){
+  int ret_code, max_x, next_position, user_key, spacing;
 
-  if(next_position > max_element)
-    return -1;
+  spacing = 2; //border char + space = 2 (one side)
+  next_position = strlen(user_string);
+  max_x = getmaxx(win);
+  //this puts our cursor in the right spot while waiting for input
+  wmove(win, 1, spacing + next_position);
+  user_key = wgetch(win);
   if(user_key == KEY_BACKSPACE || user_key == KEY_DC){
     user_string[next_position - 1] = 0; 
-    return 1;
+    //wipe last char from screen bc we are micromanaging this now...
+    mvwaddch(win, 1, spacing + next_position - 1, ' ');
+    wmove(win, 1, spacing + next_position - 1);
+    ret_code = 1;
   }
-  if(user_key >= 32 || user_key <= 126){
+  // magic bits. -1 bc next_pos is 0 based element. 
+  else if(next_position > max_x - (2 * spacing) - 1)
+    ret_code = -1;
+  else if(user_key >= 32 || user_key <= 126){
     user_string[next_position] = (char) user_key;
-    return 0;
+    //add the new char to screen 
+    mvwaddch(win, 1, spacing + next_position, user_key);
+    ret_code = 0;
   }  
-  return -2;
+  else
+    ret_code = -2;
+
+  wrefresh(win);
+  return ret_code;
+}
+
+//here we'll init all the windows in the layout we want
+//this is to hardcoded and will be made more dynamic later. 1 step at a time
+WINDOW** create_windows(){
+  int max_y, max_x;
+
+  getmaxyx(stdscr, max_y, max_x);
+  //i don't understand why i need this refresh when i have wrefresh below?
+  refresh();
+  WINDOW** win_arr = (WINDOW**) malloc(sizeof(WINDOW*) * 3);
+  //newwin params: len_y, len_x, start_y, start_x
+  //this is the top bar. y dimensions and location never change
+  win_arr[0] = newwin(1, max_x, 0, 0);
+  //this is the user input box. y dimensions and location never change
+  win_arr[1] = newwin(3, max_x, 1, 0);
+  wborder(win_arr[1], '|', '|', '-', '-', '+', '+', '+', '+');
+  //this is the list box. starts at y = 4 and goes till bottom
+  win_arr[2] = newwin(max_y - 4, max_x, 4, 0);
+  wborder(win_arr[2], '|', '|', '-', '-', '+', '+', '+', '+');
+
+  wrefresh(win_arr[BAR_WIN]);
+  wrefresh(win_arr[INPUT_WIN]);
+  wrefresh(win_arr[LIST_WIN]);
+  return win_arr;
 }
 
 int run(){
-  int cur_y = 0, cur_x = 0, max_y = 0, max_x = 0;
   int ret_code = 0;
-  char* user_string = NULL;
+  char* user_string;
   str_list* prog_list = NULL;
+  WINDOW** windows = NULL;
 
-  getmaxyx(stdscr, max_y, max_x);
-  user_string = (char*) malloc(sizeof(char) * (max_x + 1));
-  for(int i = 0; i <= max_x; i++)
+  windows = create_windows(); 
+  //allows exotic keys. using so we can use backspace/delete
+  keypad(windows[INPUT_WIN], TRUE);
+  
+  //refactor: good way to get max_x here? trying to keep stdscr stuff away
+  //instead use the appropriate window in each function called
+  user_string = (char*) malloc(sizeof(char) * (200));
+  for(int i = 0; i < 200; i++)
     user_string[i] = 0;
   while(true){
-    //get full prog list from bash. only when user_string is empty
     if(!strlen(user_string))
-      ret_code = get_prog_list(&prog_list);
-    ret_code = get_input(user_string, max_x - 1, cur_y, cur_x);
-    if (ret_code == 0 || ret_code == 1){
-      //inefficient, so refactor this to update only whats needed
-      //print_str does clear line but what of old lines not where its printing?
-      erase();
-      mvwprintw(stdscr, 1, 0, "%s", user_string);
-      if(!ret_code) //user added a char
-        ret_code = narrow_list(prog_list, user_string);
-      else //user deleted a char
-        ret_code = widen_list(prog_list, user_string);
-      print_list(prog_list, strlen(user_string), 3, max_y, 1);
-      //this isn't working at the moment. want cursor to blink after text.
-      wmove(stdscr, 1, strlen(user_string));
-      wrefresh(stdscr);
+      ret_code = get_prog_list(&prog_list); 
+    //here we sit waiting for user. process the key (get, update str, and print)
+    ret_code = process_input(windows[INPUT_WIN], user_string);
+
+    if (ret_code == 0){ //user added a char.. list narrows
+      ret_code = narrow_list(prog_list, user_string);
+      print_list(windows[LIST_WIN], prog_list, strlen(user_string));
+    }
+    else if (ret_code == 1){ //user deleted a char.. list widens
+      ret_code = widen_list(prog_list, user_string);
+      print_list(windows[LIST_WIN], prog_list, strlen(user_string));
     }
   }
   free(user_string); 
   free(prog_list);
+  return 0; //add error reporting
 }
 
 int main(){
   //start ncurses & global settings
   initscr();
-  //allows exotic keys. using so we can use delete as well. maybe unnecessary.
-  keypad(stdscr, TRUE);
   //allows input to be immediately available instead of waiting for newline 
   cbreak(); 
   //hide auto output input at cursor location so we have more control 
@@ -210,6 +269,5 @@ int main(){
   run();
   //end ncurses
   endwin();
-
-  return 0;
+  return 0; //add error reporting
 }
