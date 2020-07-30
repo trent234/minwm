@@ -126,7 +126,8 @@ int get_prog_list(str_list** in_list){
   list->len = 0;
 
   //open stream to get count and malloc space for that many strings
-  stream = popen("compgen -c | sort | uniq | wc -l | tr -d \'\n\'", "r");
+  stream = popen("echo -n $PATH | tr : \'\\0\' | xargs -0 -I {} find {} -maxdepth 1 -executable -type f -print |  sed \'s/.*\\///g\' | sort -u | wc -l", "r");
+
   if (stream == NULL) 
     return -1; //log it once that exists
   fgets(buf, sizeof(buf), stream);
@@ -139,7 +140,7 @@ int get_prog_list(str_list** in_list){
     list->match_len[i] = 0;
 
   //open stream to get prog names 
-  stream = popen("compgen -c | sort | uniq", "r");
+  stream = popen("echo -n $PATH | tr : \'\\0\' | xargs -0 -I {} find {} -maxdepth 1 -executable -type f -print |  sed \'s/.*\\///g\' | sort -u", "r");
   if (stream == NULL) 
     return -1; //log it once that exists
   while(fgets(buf, sizeof(buf), stream)){
