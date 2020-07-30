@@ -1,6 +1,7 @@
 # makefile for minwm
 # trent wilson
-# 03 july 2020
+# 29 july 2020
+# commented out stuff is guide for more complex source dir of the future
 
 # in case i have custom headers on my system
 # INCLUDE = -I /usr/local/include -I.
@@ -8,24 +9,19 @@
 # in case i have custom libs on my system 
 # LIB = -L /usr/local/lib
 
-# looks like only a subset of libs need to be linked.
-# run fltk-config for more options if needed
-# yaaaa something didn't work during link and adding full list fixed
-# LINK = -lfltk -lX11 -lXext #-ltarga
 LINK = -lncurses -lX11
 
-# which were uncommented by me and added to OBJ below 
-# OBJ = TargaImage.o
+# our object files that are passed to the main file to create the executable binary
+# OBJ = example.o
 
 minwm: minwm.c # $(OBJ)
-#	g++ -ggdb -Wall -o Project1 Main.cpp $(OBJ) $(INCLUDE) $(LIB) $(LINK) 
-	gcc -ggdb -Wall -o minwm minwm.c  $(LINK) 
+#	cc -ggdb -Wall -o minwm minwm.c $(OBJ) $(INCLUDE) $(LIB) $(LINK) 
+	cc -ggdb -Wall -o minwm minwm.c  $(LINK) 
 
-# TargaImage.o: TargaImage.cpp TargaImage.h
-#	g++ -ggdb -Wall -c -o TargaImage.o TargaImage.cpp $(INCLUDE)
+# example.o: example.c example.h
+#	cc -ggdb -Wall -c -o example.o example.c $(INCLUDE)
 
  clean:
 #	@for obj in $(OBJ); do\
 #		if test -f $$obj; then rm $$obj; fi; done
 	@if (test -f minwm); then rm minwm; fi;
-
