@@ -210,12 +210,12 @@ WINDOW** create_windows(){
   WINDOW** win_arr = (WINDOW**) malloc(sizeof(WINDOW*) * 3);
   //newwin params: len_y, len_x, start_y, start_x
   //this is the top bar. y dimensions and location never change
-  win_arr[0] = newwin(1, max_x, 0, 0);
+  win_arr[0] = newwin(1, max_x - 2, 0, 1);
   //this is the user input box. y dimensions and location never change
-  win_arr[1] = newwin(3, max_x, 1, 0);
+  win_arr[1] = newwin(3, max_x - 2, 1, 1);
   wborder(win_arr[1], '|', '|', '-', '-', '+', '+', '+', '+');
   //this is the list box. starts at y = 4 and goes till bottom
-  win_arr[2] = newwin(max_y - 4, max_x, 4, 0);
+  win_arr[2] = newwin(max_y - 4, max_x - 2, 4, 1);
   wborder(win_arr[2], '|', '|', '-', '-', '+', '+', '+', '+');
 
   wrefresh(win_arr[BAR_WIN]);
