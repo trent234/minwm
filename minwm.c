@@ -126,7 +126,8 @@ int get_prog_list(str_list** in_list){
   list->len = 0;
 
   //open stream to get count and malloc space for that many strings
-  stream = popen("echo -n $PATH | tr : \'\\0\' | xargs -0 -I {} find {} -maxdepth 1 -executable -type f -print |  sed \'s/.*\\///g\' | sort -u | wc -l", "r");
+  stream = popen("echo -n $PATH | tr : \'\\0\' | xargs -0 -I {} find {} \
+    -maxdepth 1 -executable -print |  sort -u | wc -l", "r");
 
   if (stream == NULL) 
     return -1; //log it once that exists
@@ -140,7 +141,8 @@ int get_prog_list(str_list** in_list){
     list->match_len[i] = 0;
 
   //open stream to get prog names 
-  stream = popen("echo -n $PATH | tr : \'\\0\' | xargs -0 -I {} find {} -maxdepth 1 -executable -type f -print |  sed \'s/.*\\///g\' | sort -u", "r");
+  stream = popen("echo -n $PATH | tr : \'\\0\' | xargs -0 -I {} find {} \
+    -maxdepth 1 -executable -print |  sed \'s/.*\\///g\' | sort -u", "r");
   if (stream == NULL) 
     return -1; //log it once that exists
   while(fgets(buf, sizeof(buf), stream)){
@@ -152,7 +154,7 @@ int get_prog_list(str_list** in_list){
   ret_code = pclose(stream);
   if(ret_code == -1)
     return -2;
-
+ 
   //avoid leaking mem. input should either be null or alloc'd.
   //following those rules, this should be safe
   if(*in_list)
